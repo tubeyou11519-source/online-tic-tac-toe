@@ -43,9 +43,37 @@ function makeMove(index, player) {
     cells[index].textContent = player;
 }
 
+function getAvailableMoves() {
+    return board.reduce((moves, cell, i) => {
+        if (cell === null) moves.push(i);
+        return moves;
+    }, []);
+}
+
+function randomMove() {
+    const moves = getAvailableMoves();
+    return moves[Math.floor(Math.random() * moves.length)];
+}
+
+function chooseMove() {
+    const difficulty = document.getElementById("difficulty").value;
+    const roll = Math.random();
+
+    if (difficulty === "easy") {
+        // 80% random, 20% optimal
+        return roll < 0.8 ? randomMove() : findBestMove();
+    } else if (difficulty === "medium") {
+        // 50% random, 50% optimal
+        return roll < 0.5 ? randomMove() : findBestMove();
+    } else {
+        // hard: always optimal
+        return findBestMove();
+    }
+}
+
 function computerMove() {
-    const bestMove = findBestMove();
-    makeMove(bestMove, "O");
+    const move = chooseMove();
+    makeMove(move, "O");
 
     const result = checkWinner(board);
     if (result) {
